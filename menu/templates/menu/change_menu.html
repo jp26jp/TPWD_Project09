@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="content container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>Change menu</h1>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <table>{{ menu_form.as_table }}</table>
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
