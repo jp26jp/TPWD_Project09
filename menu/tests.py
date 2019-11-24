@@ -1,5 +1,3 @@
-from io import StringIO
-
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase
@@ -60,13 +58,22 @@ class Tests(TestCase):
         resp = self.client.get(reverse('item_detail', kwargs={'pk': 400}))
         self.assertEqual(resp.status_code, 404)
 
-    def test_create_new_menu_view(self):
+    def test_create_new_menu_view_POST(self):
         form_data = {
             'season': self.menu.season,
             'items': [self.item.pk],
             'expiration_date': self.menu.expiration_date,
         }
-        response = self.client.post(reverse('menu_new'), form_data)
+        resp = self.client.post(reverse('menu_new'), form_data)
         # get the lastest menu saved
         menu = Menu.objects.latest('id')
-        self.assertRedirects(response, reverse('menu_detail', kwargs={'pk': menu.pk}))
+        self.assertRedirects(resp, reverse('menu_detail', kwargs={'pk': menu.pk}))
+
+    def test_create_new_menu_view_GET(self):
+        form_data = {
+            'season': self.menu.season,
+            'items': [self.item.pk],
+            'expiration_date': self.menu.expiration_date,
+        }
+        resp = self.client.get(reverse('menu_new'))
+        self.assertEqual(resp.status_code, 200)

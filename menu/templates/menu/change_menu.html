@@ -1,6 +1,9 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+    <style>
+        {% include 'css/date-picker.css' %}
+    </style>
     <div class="content container">
         <div class="row">
             <div class="col-md-8">
@@ -13,4 +16,11 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.js"></script>
+    <script>
+        $("#id_expiration_date").datepicker({"autoHide": true, 'format': 'yyyy-mm-dd'});
+    </script>
 {% endblock %}

@@ -1,13 +1,15 @@
-from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from operator import attrgetter
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic import FormView
+
 from .models import *
 from .forms import *
 
 
 def menu_list(request):
-    menus = Menu.objects.filter(expiration_date__gte=timezone.now()).order_by('expiration_date')
+    menus = Menu.objects.filter(expiration_date__gte=timezone.now()).order_by('expiration_date').prefetch_related(
+        'items')
     return render(request, 'menu/list_all_current_menus.html', {'menus': menus})
 
 
@@ -24,15 +26,17 @@ def item_detail(request, pk):
     return render(request, 'menu/detail_item.html', {'item': item})
 
 
-def create_new_menu(request):
-    if request.method == "POST":
-        form = MenuForm(request.POST)
-        if form.is_valid():
-            menu = form.save()
-            return redirect('menu_detail', pk=menu.pk)
-    else:
+class CreateNewMenuFormView(FormView):
+    form_class = MenuForm
+    template_name = 'menu/new.html'
+
+    def get(self, request, *args, **kwargs):
         form = MenuForm()
-    return render(request, 'menu/new.html', {'form': form})
+        return render(request, 'menu/new.html', {'form': form})
+
+    def form_valid(self, form):
+        menu = form.save()
+        return redirect('menu_detail', pk=menu.pk)
 
 
 def edit_menu(request, pk):
